@@ -1,0 +1,19 @@
+{
+  "name": "com.unity.render-pipelines.high-definition-config",
+  "description": "Configuration files for the High Definition Render Pipeline.",
+  "version": "10.10.1",
+  "unity": "2020.3",
+  "unityRelease": "18f1",
+  "displayName": "High Definition RP Config",
+  "dependencies": {
+    "com.unity.render-pipelines.core": "10.10.1"
+  },
+  "upmCi": {
+    "footprint": "7bef288121d05967e354642d6518724852b89e25"
+  },
+  "repository": {
+    "url": "https://github.com/Unity-Technologies/Graphics.git",
+    "type": "git",
+    "revision": "625fae22af5330cedb9096076d8504e74c3c3ea5"
+  }
+}
