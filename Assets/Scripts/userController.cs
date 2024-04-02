@@ -17,7 +17,7 @@ public class userController : MonoBehaviour
     }
 
 
-    void FixedUpdate()
+    void FixedUpdate()//固定时间间隔更新
     {
         if (Input.GetKey(KeyCode.LeftArrow)||Input.GetKey(KeyCode.A))
         {

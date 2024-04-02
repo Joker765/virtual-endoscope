@@ -5,23 +5,39 @@ using UnityEngine;
 public class fourPointsBezier : MonoBehaviour
 {
     public Transform way; //曲线节点的父对象
-    public float speed =8.0f;
+    public float speed =4.0f;
+    public float rotateSpeed = 30.0f;
+    public bool auto_rotate =true; 
     private Transform[] p = new Transform[0];
     private Vector3 previousPosition;
     private Quaternion previousRotation; 
-    private int id;
+    private int id; //每段贝塞尔曲线的起点id
     private Transform obj;
     private float time=0;
 
-    private void Start (){
+    //定义私有变量
+    private Vector3 preWay;
+
+    //定义该变量的公开属性
+    public Vector3 PreWay{get{return preWay;}}
+    
+    //定义该变量的公开方法
+    public Vector3 GetPreWay()
+    {
+        return preWay;
+    }
+
+    private void Awake(){
         p = way.GetComponentsInChildren<Transform>();  //返回值是子物体的<Transform>组件列表,但是p[0]是父物体
         foreach (Transform t in p) Debug.Log("t的值为: "+t);
         Debug.Log(p.Length);
 
         obj=this.transform;
-        previousPosition=obj.position=p[1].position;
+        previousPosition=preWay=obj.position=p[1].position;
         id=1; 
     }
+
+
     void Update (){
         
         time+=Time.deltaTime*speed/16;
@@ -39,13 +55,47 @@ public class fourPointsBezier : MonoBehaviour
         } else if(id == p.Length-2){
             obj.position=BezierEnd(time,id);
         }
-        
-        previousRotation = obj.rotation;
-        obj.LookAt(previousPosition); //新的rotation
-        previousPosition=obj.position;
-        obj.rotation = Quaternion.Slerp(previousRotation,obj.rotation,Time.deltaTime); //从前一帧的角度到lookat方向进行插值,平滑镜头。不停地从自己的角度向目标角度靠近
+        if(FrameRotate()) return;
+        if(auto_rotate){
+            previousRotation = obj.rotation;
+            obj.LookAt(previousPosition); //新的rotation
+            previousPosition=obj.position;
+            obj.rotation = Quaternion.Slerp(previousRotation,obj.rotation,Time.deltaTime); //从前一帧的角度到lookat方向进行插值,平滑镜头。不停地从自己的角度向目标角度靠近
         //Lerp线性插值 对距离进行插值，角度不均  Slerp 球形插值,角度变化均匀。
+        }
+        preWay=p[id<p.Length-1 ? id : p.Length-1].position;
     }
+
+    bool FrameRotate(){
+        bool flag =false;
+        if (Input.GetKey(KeyCode.LeftArrow)||Input.GetKey(KeyCode.A))
+        {
+
+            this.transform.Rotate(0,-rotateSpeed*Time.deltaTime,0,Space.Self);
+            flag= true;
+        }
+        if (Input.GetKey(KeyCode.RightArrow)||Input.GetKey(KeyCode.D))
+        {
+
+            this.transform.Rotate(0,rotateSpeed*Time.deltaTime,0,Space.Self);
+            flag= true;
+        }
+
+
+        if (Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow))
+        {
+            this.transform.Rotate(-rotateSpeed*Time.deltaTime,0,0,Space.Self);
+            flag= true;
+        }
+        if (Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow))
+        {
+            this.transform.Rotate(rotateSpeed*Time.deltaTime,0,0,Space.Self);
+            flag= true;
+        }
+        return flag;
+    }
+
+
     Vector3 BezierBegin(float t){ //2次贝塞尔曲线
         Vector3 end = p[2].position;
         Vector3 middle = end+(p[1].position-p[3].position)/4;
